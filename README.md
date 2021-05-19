@@ -1,6 +1,6 @@
-# `folder-cleaner`
+# `exp`
 
-temporary folder automatically cleanup after expired
+temporary folder automatically cleanup after expired.
 
 ## todo
 - [ ] add cli for setting dir
