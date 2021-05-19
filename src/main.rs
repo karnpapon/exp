@@ -15,8 +15,9 @@ fn main() -> Result<()> {
       let abs = matches.value_of("path").unwrap().to_string();
       let abs_path = fs::canonicalize(&PathBuf::from(&abs)).unwrap();
       root = abs_path.display().to_string();
+      
       println!("--------------------------------------------------------------");
-      println!("copy this line below to .bash_profile and run `source .bash_profile`");
+      println!("copy line below to .bash_profile or .bashrc and run `source .bash_profile`");
       println!("--------------------------------------------------------------");
       println!("\n");
       println!("export EXP_PATH={:?}", abs_path);
@@ -37,7 +38,7 @@ fn main() -> Result<()> {
   app.init().unwrap();
   app.setup_folder();
   app.check_folder();
-  println!("{:#?}", app);
+  // println!("{:#?}", app);
 
   Ok(())
 }

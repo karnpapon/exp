@@ -6,10 +6,9 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::{self, BufReader, Read, Write};
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use sha1::{Digest, Sha1};
 
 use super::utils::*;
-use sha1::{Digest, Sha1};
 
 const TEMP_FOLDER_NAME: &str = "temp_queues";
 const DELETE_FOLDER_NAME: &str = "delete_queues";
@@ -57,16 +56,16 @@ impl App {
   }
 
   pub fn init(&mut self) -> Result<()> {
-    if self.check_init_file_exist() == false {
-      self.setup_init_file().unwrap();
+    if self.check_config_file_existed() == false {
+      self.setup_config_file().unwrap();
       return Ok(());
     }
     self.renew();
-    self.check_init_config_id().unwrap();
+    self.check_config_id().unwrap();
     Ok(())
   }
 
-  pub fn check_init_file_exist(&self) -> bool {
+  pub fn check_config_file_existed(&self) -> bool {
     let mut init_file = String::from(&self.root);
     init_file.push_str("/");
     init_file.push_str(CONFIG_FILE_NAME);
@@ -76,7 +75,7 @@ impl App {
     return is_exist;
   }
 
-  pub fn setup_init_file(&mut self) -> Result<()> {    
+  pub fn setup_config_file(&mut self) -> Result<()> {    
     let res = self.get_id_from_root();
     self.set_config_path();
 
@@ -107,7 +106,7 @@ impl App {
     self.set_config_path();
   }
 
-  fn read_init_file(&mut self) -> Result<(String, String)> {
+  fn read_config_file(&mut self) -> Result<(String, String)> {
     let file = File::open(self.config_path.clone())?;
     let mut f_reader = BufReader::new(file);
     let mut line = String::new();
@@ -130,11 +129,11 @@ impl App {
     Ok((root.trim_end().to_string(), id))
   }
 
-  fn check_init_config_id(&mut self) -> Result<()> {
+  fn check_config_id(&mut self) -> Result<()> {
     let id_from_root = self.get_id_from_root();
-    let (_, id) = self.read_init_file().unwrap();
+    let (_, id) = self.read_config_file().unwrap();
     if id_from_root != id {
-      self.setup_init_file().unwrap();
+      self.setup_config_file().unwrap();
     }
     Ok(())
   }
