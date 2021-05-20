@@ -14,7 +14,7 @@ pub fn print_check_err_msg(e: String){
   println!("{}", e);
   println!("please navigate to your expected path and run `exp init` first.");
   println!("--------------------------------------------------------------------------");
-  process::exit(0x0100);
+  process::exit(0);
 }
 
 pub fn print_msg(msg: String){
