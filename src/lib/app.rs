@@ -73,7 +73,6 @@ impl App {
       Some(p) => p,
       None => String::from("")
     };
-    println!("check path {}", path);
     if path.is_empty() { return }
     let mut init_file = String::from(&path);
     init_file.push_str("/");
