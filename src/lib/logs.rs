@@ -1,3 +1,5 @@
+use std::process;
+
 pub fn print_init_msg(path: String) {
   println!("--------------------------------------------------------------------------");
   println!("copy line below to .bash_profile or .bashrc and run `source .bash_profile`");
@@ -12,7 +14,7 @@ pub fn print_check_err_msg(e: String){
   println!("{}", e);
   println!("please navigate to your expected path and run `exp init` first.");
   println!("--------------------------------------------------------------------------");
-  panic!();
+  process::exit(0x0100);
 }
 
 pub fn print_msg(msg: String){
