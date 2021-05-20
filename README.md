@@ -1,11 +1,14 @@
 # `exp`
-[![Build Status](https://travis-ci.com/karnpapon/exp.svg?branch=main)](https://travis-ci.com/karnpapon/exp)
+[![Build Status](https://travis-ci.com/karnpapon/exp.svg?branch=main)](https://travis-ci.com/karnpapon/exp) [![Build status](https://ci.appveyor.com/api/projects/status/thgy06kf78wooksu/branch/main?svg=true)](https://ci.appveyor.com/project/karnpapon/exp/branch/main)
+
+<img src="./public/exp.gif"></img>
 
 <strong> CLI to create an opinionated temporary folder structure, automatically cleanup after they're expired. </strong>
 
 - `exp` will create temp folder `explore` and to soon-to-be-deleted folder `expired`. 
 - files/folders live inside `explore` will be moved to `expired` 7 days after its last opened. 
 - and then after next 7 days all files/folder will be deleted from `expired` folder. 
+- The config file `.exp` will be located at `EXP_PATH` When you run `exp init` for the first time it will be created automatically. normally you don't have to edit this file. it is being used only for checking `EXP_PATH`.
 
 ## install
 - `cd to-your-target-path && exp init`
@@ -24,3 +27,5 @@
 
 ## Optional
 - [ ] config folder based on .gitignore
+
+inspired by [cargo-temp](https://github.com/yozhgoor/cargo-temp)
