@@ -6,8 +6,9 @@
 any files/folder live inside `temp_queues` will be moved to `delete_queues` after it has been created 7 days ( slightly similar to how email services work) and then after next 7 days all files/folder will be deleted from `delete_queues` folder. 
 
 ## install
-- `exp init <YOUR-TARGET-PATH>`
+- `cd to-your-target-path && exp init`
 - put returned string (eg. `export EXP_PATH=/your/target/path`) after setup init-path to `.bash_profile` or `.bashrc` 
+- add `exp` command to your `.bashrc` or `.bash_profile`.
 - `source .bash_profile` or `source .bashrc` to reload path.
 
 ## todo
@@ -17,6 +18,7 @@ any files/folder live inside `temp_queues` will be moved to `delete_queues` afte
 - [ ] details screenshot after folder has been deleted.
 - [ ] expire date configurable.
 - [ ] cleaning up setup folder when EXP_PATH change.
+- [ ] error handling.
 
 ## Optional
 - [ ] config folder based on .gitignore
