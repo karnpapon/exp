@@ -1,4 +1,5 @@
 # `exp`
+[![Build Status](https://travis-ci.com/karnpapon/exp.svg?branch=main)](https://travis-ci.com/karnpapon/exp)
 
 <strong> CLI to create an opinionated temporary folder structure, automatically cleanup after they're expired. </strong>
 
