@@ -4,7 +4,7 @@ use std::fs;
 use std::fs::DirEntry;
 use std::fs::File;
 use std::io::prelude::*;
-use std::io::{self, BufReader, Write};
+use std::io::{ BufReader, Write};
 use std::path::{Path};
 use sha1::{Digest, Sha1};
 
@@ -288,18 +288,18 @@ impl DirWalker for DeleteQueues {
           let diff = diff_between_created_and_now(&dir)?;
           if let Ok(file_type) = entry.file_type() {
             if is_expired(diff, 7) {
-              // if file_type.is_file() {
-              //   fs::remove_file(dir.clone()).unwrap();
-              // }
-              // if file_type.is_dir() {
-              //   if let Ok(_) = fs::remove_dir_all(dir.clone()) {
-              //     Notification::new()
-              //       .summary("CLEANED UP")
-              //       .body("folder has expired")
-              //       .icon("firefox")
-              //       .show()?;
-              //   }
-              // }
+              if file_type.is_file() {
+                fs::remove_file(dir.clone()).unwrap();
+              }
+              if file_type.is_dir() {
+                if let Ok(_) = fs::remove_dir_all(dir.clone()) {
+                  Notification::new()
+                    .summary("CLEANED UP")
+                    .body("folder has expired")
+                    .icon("firefox")
+                    .show()?;
+                }
+              }
             }
           } else {
             println!("Couldn't get file type for {:?}", entry.path());

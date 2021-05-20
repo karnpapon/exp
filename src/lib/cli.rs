@@ -1,4 +1,4 @@
-use clap::{App, Arg, ArgMatches};
+use clap::{App, ArgMatches};
 use std::process::Command;
 use super::logs;
 
