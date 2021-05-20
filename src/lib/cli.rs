@@ -52,7 +52,7 @@ fn _init() -> String {
 pub fn check_exp_path() -> Option<String> {
   let output = if cfg!(target_os = "windows") {
     Command::new("cmd")
-      .args(&["/C", "echo %EXP_PATH%"])
+      .args(&["/C", "$Env:Path"])
       .output()
       .expect("failed to execute process")
   } else {
