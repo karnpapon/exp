@@ -1,5 +1,6 @@
 use clap::{App, Arg, ArgMatches};
 use std::process::Command;
+use super::logs;
 
 pub fn main() -> ArgMatches {
   let matches = App::new("exp")
@@ -12,7 +13,23 @@ pub fn main() -> ArgMatches {
   return matches;
 }
 
-pub fn init() -> String {
+pub fn init() -> ( String, String ) {
+  let path = _init();
+  let cmd = String::from("init");
+  return ( path, cmd )
+}
+
+pub fn check() -> Option<String>{
+  match check_exp_path() {
+    Some(path) => return Some(path),
+    None => { 
+      logs::print_check_err_msg("no exported EXP_PATH".to_string()); 
+      return None
+    },
+  }
+}
+
+fn _init() -> String {
   let output = if cfg!(target_os = "windows") {
     Command::new("cmd")
       .args(&["/C", "cd"])
@@ -32,7 +49,7 @@ pub fn init() -> String {
   return path;
 }
 
-pub fn check() -> Result<String, String> {
+pub fn check_exp_path() -> Option<String> {
   let output = if cfg!(target_os = "windows") {
     Command::new("cmd")
       .args(&["/C", "echo %EXP_PATH%"])
@@ -50,24 +67,7 @@ pub fn check() -> Result<String, String> {
     .to_string();
 
   match path.is_empty() {
-    true => Err("error: no exported EXP_PATH".to_string()),
-    false => Ok(path)
+    false => Some(path),
+    true => None,
   }
-}
-
-pub fn print_init_msg(path: String) {
-  println!("--------------------------------------------------------------------------");
-  println!("copy line below to .bash_profile or .bashrc and run `source .bash_profile`");
-  println!("--------------------------------------------------------------------------");
-  println!("\n");
-  println!("export EXP_PATH={:?}", path);
-  println!("\n");
-}
-
-pub fn print_check_err_msg(e: String){
-  println!("--------------------------------------------------------------------------");
-  println!("{}", e);
-  println!("please navigate to your expected path and run `exp init` first.");
-  println!("--------------------------------------------------------------------------");
-  panic!();
 }

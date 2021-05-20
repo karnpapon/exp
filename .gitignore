@@ -1,4 +1,5 @@
 /target
 .exp
-/delete_queues
-/temp_queues
+/todo.md
+/explore
+/expired

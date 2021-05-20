@@ -2,8 +2,9 @@
 
 <strong> CLI to create an opinionated temporary folder structure, automatically cleanup after they're expired. </strong>
 
-`exp` will create `temp_queues` folder and `delete_queues` folder automatically by setup target path.
-any files/folder live inside `temp_queues` will be moved to `delete_queues` after it has been created 7 days ( slightly similar to how email services work) and then after next 7 days all files/folder will be deleted from `delete_queues` folder. 
+- `exp` will create temp folder `explore` and to soon-to-be-deleted folder `expired`. 
+- files/folders live inside `explore` will be moved to `expired` 7 days after its last opened. 
+- and then after next 7 days all files/folder will be deleted from `expired` folder. 
 
 ## install
 - `cd to-your-target-path && exp init`
@@ -17,7 +18,7 @@ any files/folder live inside `temp_queues` will be moved to `delete_queues` afte
 - [x] push noti.
 - [ ] details screenshot after folder has been deleted.
 - [ ] expire date configurable.
-- [ ] cleaning up setup folder when EXP_PATH change.
+- [x] cleaning up setup folder when EXP_PATH change.
 - [ ] error handling.
 
 ## Optional

@@ -9,10 +9,10 @@ use std::path::{Path};
 use sha1::{Digest, Sha1};
 
 use super::utils::*;
+use super::logs;
+use super::cli;
+use super::vars;
 
-const TEMP_FOLDER_NAME: &str = "temp_queues";
-const DELETE_FOLDER_NAME: &str = "delete_queues";
-const CONFIG_FILE_NAME: &str = ".exp";
 
 type Result<T> = std::result::Result<T, Box<dyn error::Error>>;
 
@@ -57,6 +57,7 @@ impl App {
 
   pub fn init(&mut self, cmd: &str) -> Result<()> {
     if self.check_config_file_existed() == false {
+      self.remove_prev_config_file();
       self.create_config_file().unwrap();
       return Ok(());
     }
@@ -65,10 +66,25 @@ impl App {
     Ok(())
   }
 
+  fn remove_prev_config_file(&self){
+    let path = match cli::check_exp_path() {
+      Some(p) => p,
+      None => String::from("")
+    };
+    if path.is_empty() { return }
+    let mut init_file = String::from(&path);
+    init_file.push_str("/");
+    init_file.push_str(vars::CONFIG_FILE_NAME);
+    match fs::remove_file(init_file){
+      Ok(()) => { logs::print_msg(String::from("old config file `.exp` is removed. please update EXP_PATH")) },
+      Err(_) => { logs::print_msg("[exp] - an cli tool to create temporary folder.".to_string()) },
+    }
+  }
+
   pub fn check_config_file_existed(&self) -> bool {
     let mut init_file = String::from(&self.root);
     init_file.push_str("/");
-    init_file.push_str(CONFIG_FILE_NAME);
+    init_file.push_str(vars::CONFIG_FILE_NAME);
 
     let path = Path::new(&init_file);
     let is_exist = path.is_file();
@@ -84,6 +100,7 @@ impl App {
     file.write(b"[EXP CONFIG FILE]\n")?;
     file.write_fmt(format_args!("ROOT: {}\n", self.root))?;
     file.write_fmt(format_args!("ID: {}", res))?;
+    logs::print_init_msg(self.root.clone());
     
     Ok(())
   }
@@ -91,7 +108,7 @@ impl App {
   fn set_config_path(&mut self) {
     let mut file_name = String::from(&self.root);
     file_name.push_str("/");
-    file_name.push_str(CONFIG_FILE_NAME);
+    file_name.push_str(vars::CONFIG_FILE_NAME);
     self.config_path = file_name;
   }
 
@@ -136,13 +153,13 @@ impl App {
     let is_matched = id_from_root.trim_end() == id.trim_end();
 
     if is_matched && cmd == "init" { 
-      println!("skipped: init the same path.");
+      logs::print_msg(String::from("skipped: init the same path."));
       return Ok(())
     }
 
     if is_matched == false {
+      logs::print_init_msg(self.root.clone());
       self.create_config_file().unwrap();
-      // TODO: rm old config file `.exp`
     }
     Ok(())
   }
@@ -168,7 +185,7 @@ impl App {
   fn add_delete_q(&mut self) -> Result<()> {
     let mut dir = String::from(&self.root);
     dir.push_str("/");
-    dir.push_str(DELETE_FOLDER_NAME);
+    dir.push_str(vars::DELETE_FOLDER_NAME);
     self.delete_queues_dir = Some(DeleteQueues::new(dir));
     if self.delete_queues_dir.as_ref().unwrap().is_exist() {
       return self.add_delete_q_entry();
@@ -181,7 +198,7 @@ impl App {
   fn add_temp_q(&mut self) -> Result<()> {
     let mut dir = String::from(&self.root);
     dir.push_str("/");
-    dir.push_str(TEMP_FOLDER_NAME);
+    dir.push_str(vars::TEMP_FOLDER_NAME);
     self.temp_queues_dir = Some(TempQueues::new(dir));
     if self.temp_queues_dir.as_ref().unwrap().is_exist() {
       return self.add_temp_q_entry();
@@ -194,7 +211,7 @@ impl App {
   fn add_delete_q_entry(&mut self) -> Result<()> {
     for entry in fs::read_dir(&self.root)? {
       let ent = entry.unwrap();
-      if ent.file_name() == DELETE_FOLDER_NAME {
+      if ent.file_name() == vars::DELETE_FOLDER_NAME {
         self.delete_queues_dir.as_mut().unwrap().create_entry(ent)?;
       };
     }
@@ -204,7 +221,7 @@ impl App {
   fn add_temp_q_entry(&mut self) -> Result<()> {
     for entry in fs::read_dir(&self.root)? {
       let ent = entry.unwrap();
-      if ent.file_name() == TEMP_FOLDER_NAME {
+      if ent.file_name() == vars::TEMP_FOLDER_NAME {
         self.temp_queues_dir.as_mut().unwrap().create_entry(ent)?;
       };
     }
@@ -217,7 +234,7 @@ impl DirWalker for TempQueues {
     for entry in fs::read_dir(&self.path)? {
       let file_name = entry.as_ref().unwrap().file_name();
       let dir = entry?.path();
-      let diff = diff(&dir)?;
+      let diff = diff_between_created_and_now(&dir)?;
       let mut to = move_to.as_ref().unwrap().clone();
       to.push_str("/");
       to.push_str(file_name.to_str().unwrap());
@@ -268,21 +285,21 @@ impl DirWalker for DeleteQueues {
       for entry in entries {
         if let Ok(entry) = entry {
           let dir = entry.path();
-          let diff = diff(&dir)?;
+          let diff = diff_between_created_and_now(&dir)?;
           if let Ok(file_type) = entry.file_type() {
             if is_expired(diff, 7) {
-              if file_type.is_file() {
-                fs::remove_file(dir.clone()).unwrap();
-              }
-              if file_type.is_dir() {
-                if let Ok(_) = fs::remove_dir_all(dir.clone()) {
-                  Notification::new()
-                    .summary("CLEANED UP")
-                    .body("folder has expired")
-                    .icon("firefox")
-                    .show()?;
-                }
-              }
+              // if file_type.is_file() {
+              //   fs::remove_file(dir.clone()).unwrap();
+              // }
+              // if file_type.is_dir() {
+              //   if let Ok(_) = fs::remove_dir_all(dir.clone()) {
+              //     Notification::new()
+              //       .summary("CLEANED UP")
+              //       .body("folder has expired")
+              //       .icon("firefox")
+              //       .show()?;
+              //   }
+              // }
             }
           } else {
             println!("Couldn't get file type for {:?}", entry.path());
