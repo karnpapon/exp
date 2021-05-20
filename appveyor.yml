@@ -64,7 +64,7 @@ deploy:
   # - Encrypt it. Go to https://ci.appveyor.com/tools/encrypt
   # - Paste the output down here
   auth_token:
-    secure: EQecfNVmODDTEr+66EVy3Aw4kJn8fCpdg6q3fKgKzwTCktdMPpiQs+tr8E8EMsdC
+    secure: G/HqtoAESx/d3L7KylXv5j0yrAy3PQZ5KcX281c16wZlx/ivH8pdmRvQdmy9/YiV
   description: ''
   on:
     # TODO Here you can pick which targets will generate binary releases
