@@ -95,7 +95,6 @@ before_deploy:
   - sh ci/before_deploy.sh
 
 deploy:
-  # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
   api_key:
     secure: LILPpNgkTTQkAhdQqmFnNrsDeG79pwk+OwZFr2TMo7hc1xRWgt1eQQjyrkV06ltaUs9STp7Irex+2zRoZ6rJB7gcN3uGCaO6Rvr728rAS9I4LSwI2tVMIqQSVjMZme8HwbjDbSdsqFToo7u3RzYGIyeWiCEGHWRuIFoqvgIS93Y88jXdv6KFtbBrveORHI+MPQcZcCV+HaAnMZ4a9YCQgT3ocDBveSZaQlI5vs729WKRuG/TD2WH08vi3yNbyfOwlkGLNBdlOn9Xp+4qHmCfhloehnUgb5L4ZAkUZjLXPLeEHLcZLy6c9qiClgsEEu3wHoz0tyn6JsafTxp6Lxde+8n7lUsgomaYUvgL5HAs8eEJE4ZFAkBb1mb5YuhyxwdoFe7wog0triMpfPhIzuTk8+km7c32GvSYptG9MB7/PkYxbWStz9puCXK3NBahHF1W16a2UD+SADD63AJ3mgAMvXkPmjjsGhxx+Wy4cryuCzGpi8KYKFy9+12YBq/8cm6YIwrIp33+YbYkcc+LFZvEt1sIkY+rHsmkf8LfOIW2qUBZEWkPXRDcrwUANkNh9qugrjmHJXXuIvOsSwmebsob6txVyNCS1e/5pWut1ZblNsgWKGXQKIbQmMn5K7iLBy1EPRF7aoSLoAqJSOs8xkb0YyiknayGtPi08FGMgAOQCg4=
   file_glob: true
