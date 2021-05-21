@@ -25,9 +25,9 @@ exp -h
 
 ## usage
 - `cd to-your-target-path && exp init`
-- put returned string (eg. `export EXP_PATH=/your/target/path`) after setup init-path to `.bash_profile` or `.bashrc` 
-- add `exp` command to your `.bashrc` or `.bash_profile`.
-- `source .bash_profile` or `source .bashrc` to reload path.
+- put returned string (eg. `export EXP_PATH=/your/target/path`) into `.profile` or `.zprofile` (for [zsh](https://ohmyz.sh/) users) depends on what shell you're using, normally default would be `.profile`.
+- add `exp` command to your `.profile` or `.zprofile`.
+- everytime terminal is opened, `exp` will manage to check if any folder/file should be moved or deleted.
 
 ## command
 - `exp init` = to create `explore` and `expire` folder and `.exp` (config file).

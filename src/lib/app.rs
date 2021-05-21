@@ -7,8 +7,10 @@ use std::io::prelude::*;
 use std::io::{ BufReader, Write};
 use std::path::{Path, PathBuf};
 use sha1::{Digest, Sha1};
-use path_slash::PathExt;
+// use path_slash::PathExt;
 use path_slash::PathBufExt;
+// use std::process::Command;
+// use std::process::Stdio;
 
 use super::utils::*;
 use super::logs;
@@ -74,13 +76,28 @@ impl App {
       None => String::from("")
     };
     if path.is_empty() { return }
+
+    let (_path, _) = cli::init();
+
+    // path to be initilized.
     let mut init_file = String::from(&path);
     init_file.push_str("/");
     init_file.push_str(vars::CONFIG_FILE_NAME);
+
+    // check if any path have been initialized before.
+    let mut old_path = String::from(_path);
+    old_path.push_str("/");
+    old_path.push_str(vars::CONFIG_FILE_NAME);
+
     let p = PathBuf::from_slash(&init_file);
+    let _p = PathBuf::from(old_path);
+
+    // return if EXP_PATH is the same.
+    if p == _p  { return }
+
     match fs::remove_file(p){
       Ok(()) => { logs::print_msg(String::from("old config file `.exp` is removed. please update EXP_PATH")) },
-      Err(_) => { logs::print_msg("[exp] - an cli tool to create temporary folder.".to_string()) },
+      Err(_) => { logs::print_msg("cannot remove config file".to_string()) },
     }
   }
 
@@ -106,6 +123,17 @@ impl App {
     file.write(b"[EXP CONFIG FILE]\n")?;
     file.write_fmt(format_args!("ROOT: {}\n", self.root))?;
     file.write_fmt(format_args!("ID: {}", res))?;
+    // let echo_path = format!("echo export EXP_PATH={} >> ~/.zprofile", self.root.clone());
+
+    // let mut output = Command::new("sh")
+    //   .arg("-c")
+    //   .arg(echo_path)
+    //   .stdout(Stdio::piped())
+    //   .spawn()
+    //   .expect("failed to start 'echo'");
+
+    // output.wait().expect("Couldn't wait for echo child");
+
     logs::print_init_msg(self.root.clone());
     
     Ok(())

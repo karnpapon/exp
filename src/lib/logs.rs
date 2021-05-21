@@ -2,10 +2,11 @@ use std::process;
 
 pub fn print_init_msg(path: String) {
   println!("--------------------------------------------------------------------------");
-  println!("copy line below to .bash_profile or .bashrc and run `source .bash_profile`");
+  println!("copy lines below to ~/.profile or ~/.zprofile (zsh) depends on your shell.");
   println!("--------------------------------------------------------------------------");
   println!("\n");
   println!("export EXP_PATH={:?}", path);
+  println!("exp");
   println!("\n");
 }
 
