@@ -17,10 +17,6 @@ environment:
     - TARGET: i686-pc-windows-gnu
     - TARGET: x86_64-pc-windows-gnu
 
-    # OSX
-    - TARGET: i686-apple-darwin
-    - TARGET: x86_64-apple-darwin
-
     # MSVC
     - TARGET: i686-pc-windows-msvc
     - TARGET: x86_64-pc-windows-msvc
