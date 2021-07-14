@@ -4,13 +4,10 @@ use std::fs;
 use std::fs::DirEntry;
 use std::fs::File;
 use std::io::prelude::*;
-use std::io::{ BufReader, Write};
+use std::io::{ Error, BufReader, Write};
 use std::path::{Path, PathBuf};
 use sha1::{Digest, Sha1};
-// use path_slash::PathExt;
 use path_slash::PathBufExt;
-// use std::process::Command;
-// use std::process::Stdio;
 
 use super::utils::*;
 use super::logs;
@@ -28,18 +25,18 @@ pub trait DirWalker {
 pub struct App {
   pub root: String,
   pub config_path: String,
-  pub temp_queues_dir: Option<TempQueues>,
-  pub delete_queues_dir: Option<DeleteQueues>,
+  pub temp_queues_dir: Option<ExploreQueue>,
+  pub delete_queues_dir: Option<ExpireQueue>,
 }
 
 #[derive(Debug)]
-pub struct TempQueues {
+pub struct ExploreQueue {
   pub path: String,
   pub entry: Option<DirEntry>,
 }
 
 #[derive(Debug)]
-pub struct DeleteQueues {
+pub struct ExpireQueue {
   pub path: String,
   pub entry: Option<DirEntry>,
 }
@@ -221,7 +218,7 @@ impl App {
     dir.push_str("/");
     dir.push_str(vars::DELETE_FOLDER_NAME);
     let p = PathBuf::from_slash(&dir).display().to_string();
-    self.delete_queues_dir = Some(DeleteQueues::new(p));
+    self.delete_queues_dir = Some(ExpireQueue::new(p));
     if self.delete_queues_dir.as_ref().unwrap().is_exist() {
       return self.add_delete_q_entry();
     }
@@ -235,7 +232,7 @@ impl App {
     dir.push_str("/");
     dir.push_str(vars::TEMP_FOLDER_NAME);
     let p = PathBuf::from_slash(&dir).display().to_string();
-    self.temp_queues_dir = Some(TempQueues::new(p));
+    self.temp_queues_dir = Some(ExploreQueue::new(p));
     if self.temp_queues_dir.as_ref().unwrap().is_exist() {
       return self.add_temp_q_entry();
     }
@@ -265,7 +262,7 @@ impl App {
   }
 }
 
-impl DirWalker for TempQueues {
+impl DirWalker for ExploreQueue {
   fn check(&self, move_to: Option<String>) -> Result<()> {
     for entry in fs::read_dir(&self.path)? {
       let file_name = entry.as_ref().unwrap().file_name();
@@ -290,7 +287,7 @@ impl DirWalker for TempQueues {
   }
 }
 
-impl TempQueues {
+impl ExploreQueue {
   fn new(path: String) -> Self {
     Self {
       path: path,
@@ -316,39 +313,36 @@ impl TempQueues {
   }
 }
 
-impl DirWalker for DeleteQueues {
+impl DirWalker for ExpireQueue {
   fn check(&self, _move_to: Option<String>) -> Result<()> {
-    if let Ok(entries) = fs::read_dir(&self.path) {
-      for entry in entries {
-        if let Ok(entry) = entry {
-          let dir = entry.path();
-          let diff = diff_between_created_and_now(&dir)?;
-          if let Ok(file_type) = entry.file_type() {
-            if is_expired(diff, 7) {
-              if file_type.is_file() {
-                fs::remove_file(dir.clone()).unwrap();
-              }
-              if file_type.is_dir() {
-                if let Ok(_) = fs::remove_dir_all(dir.clone()) {
-                  Notification::new()
-                    .summary("CLEANED UP")
-                    .body("folder has expired")
-                    .icon("firefox")
-                    .show()?;
-                }
-              }
+    for entry in fs::read_dir(&self.path)? {
+      let entry = entry?;
+      let dir = entry.path();
+      let diff = diff_between_created_and_now(&dir)?;
+      if let Ok(file_type) = entry.file_type() {
+        if is_expired(diff, 7) {
+          if file_type.is_file() {
+            fs::remove_file(dir.clone()).unwrap();
+          }
+          if file_type.is_dir() {
+            if let Ok(_) = fs::remove_dir_all(dir.clone()) {
+              Notification::new()
+                .summary("CLEANED UP")
+                .body("folder has expired")
+                .icon("firefox")
+                .show()?;
             }
-          } else {
-            println!("Couldn't get file type for {:?}", entry.path());
           }
         }
+      } else {
+        println!("Couldn't get file type for {:?}", entry.path());
       }
     }
     Ok(())
   }
 }
 
-impl DeleteQueues {
+impl ExpireQueue {
   fn new(path: String) -> Self {
     Self {
       path: path,

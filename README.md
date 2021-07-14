@@ -37,6 +37,7 @@ exp -h
 - [x] add cli for setting dir.
 - [x] create config file.
 - [x] push noti.
+- [ ] cli for manually remove init file.
 - [ ] details screenshot after folder has been deleted.
 - [ ] expire date configurable.
 - [x] cleaning up setup folder when EXP_PATH change.
